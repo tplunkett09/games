@@ -8,6 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            padding: 10px;
         }
         #question {
             font-size: 20px;
@@ -15,20 +16,23 @@
         }
         #choices {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
+            gap: 10px;
             margin-bottom: 20px;
         }
         button {
-            margin: 0 10px;
+            margin: 0 5px;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
+            width: 45%;
         }
         #score {
             font-size: 18px;
             margin-bottom: 20px;
         }
-				        /* Styles for home button */
+        /* Styles for home button */
         .home-button {
             position: absolute;
             top: 10px;
@@ -53,9 +57,9 @@
     <div id="score">Score: <span id="current-score">0</span> High Score: <span id="high-score">0</span></div>
     
     <script>
-	    function goToHome() {
-        window.location.href = 'Home.html';
-		}
+        function goToHome() {
+            window.location.href = 'Home.html';
+        }
         let triviaData = [
 			{
 				question: "What is the capital of France?",

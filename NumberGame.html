@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Number Guessing Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         #confetti-canvas {
             position: fixed;
@@ -9,6 +10,7 @@
             left: 0;
             pointer-events: none;
             z-index: 1000; /* Ensure confetti appears on top */
+            display: none; /* Hide initially */
         }
         body {
             font-family: Arial, sans-serif;
@@ -20,7 +22,7 @@
             margin-top: 1rem;
         }
         .container {
-            max-width: 400px;
+            max-width: 90%; /* Adjusted for smaller screens */
             margin: 0 auto;
             padding: 0 10px;
         }
