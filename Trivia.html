@@ -703,25 +703,25 @@
         let score = 0;
         let highScore = localStorage.getItem('highScore') || 0;
 
-        function displayQuestion() {
-            const randomIndex = Math.floor(Math.random() * triviaData.length);
-            const { question, answers, correctAnswer } = triviaData[randomIndex];
-            const questionElement = document.getElementById("question");
-            const choicesElement = document.getElementById("choices");
+		function displayQuestion() {
+			const randomIndex = Math.floor(Math.random() * triviaData.length);
+			const { question, answers, correctAnswer } = triviaData[randomIndex];
+			const questionElement = document.getElementById("question");
+			const choicesElement = document.getElementById("choices");
 
-            questionElement.textContent = question;
-            choicesElement.innerHTML = "";
+			questionElement.textContent = question;
+			choicesElement.innerHTML = "";
 
-            const shuffledAnswers = shuffle([...answers]);
-            shuffledAnswers.forEach(choice => {
-                const button = document.createElement("button");
-                button.textContent = choice;
-                button.onclick = function() {
-                    checkAnswer(choice, correctAnswer);
-                };
-                choicesElement.appendChild(button);
-            });
-        }
+			const shuffledAnswers = shuffle([...answers]);
+			shuffledAnswers.forEach(choice => {
+				const button = document.createElement("button");
+				button.textContent = choice;
+				button.onclick = () => checkAnswer(choice, correctAnswer);
+				choicesElement.appendChild(button); // Append each button to the choicesElement
+				choicesElement.appendChild(document.createElement("br")); // Add a line break after each button
+			});
+		}
+
 
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
