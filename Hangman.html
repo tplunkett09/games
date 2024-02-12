@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hangman Game</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    #word {
+        margin-top: 20px;
+        font-size: 1.5em;
+    }
+    #letters {
+        margin-top: 20px;
+    }
+    #message {
+        margin-top: 20px;
+    }
+    #hangmanDrawing {
+        font-size: 2em;
+        margin-top: 20px;
+    }
+		        /* Styles for home button */
+    .home-button {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #007bff;
+        color: #fff;
+        padding: 8px 12px;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    .home-button:hover {
+        background-color: #0056b3; /* Darker shade of blue on hover */
+    }
+</style>
+</head>
+<body>
+<button class="home-button" onclick="goToHome()">Home</button>
+<h1>Hangman Game</h1>
+<div id="hangmanDrawing">[ ]---|</div>
+<div id="word">Word: </div>
+<div id="letters">Letters: </div>
+<div id="message"></div>
+<script>
+	    function goToHome() {
+        window.location.href = 'home.html';
+		}
+    const words = ['hangman', 'javascript', 'programming', 'computer', 'internet', 'developer', 'moana', 'maui', 'elsa', 'anna', 'frozen', 'kristoff', 'sven', 'olaf', 'tarzan', 'hercules',
+    'megara', 'peterpan', 'winniethepooh', 'piglet', 'tigger', 'eeyore', 'mulan', 'shang', 'mushu', 'coco',
+    'miguel', 'héctor', 'ernesto', 'dory', 'nemo', 'marlin', 'buzzlightyear', 'toystory', 'frozone', 'incredibles',
+    'dash', 'violet', 'jackjack', 'ratatouille', 'remy', 'emile', 'brave', 'merida', 'jane',
+    'lionking', 'timon', 'pumbaa', 'rafiki', 'zazu', 'scar', 'disney', 'pixar', 'mickeymouse', 'minniemouse', 'donaldduck', 'goofy', 'pluto', 'ariel', 'cinderella', 'belle', 'snowwhite', 'jasmine',
+    'aladdin', 'simba', 'nala', 'rapunzel', 'flynnrider', 'pocahontas', 'tiana', 'tinkerbell', 'photosynthesis', 'metamorphosis', 'dinosaur', 'galaxy', 'ecosystem', 'biodiversity', 'quantum', 'nebula', 'volcano', 'chlorophyll',
+    'madagascar', 'himalayas', 'amazon', 'sahara', 'antarctica', 'eiffeltower', 'pyramids', 'venice', 'everest', 'kilimanjaro',
+    'guacamole', 'spaghetti', 'sushi', 'croissant', 'paella', 'barbecue', 'cappuccino', 'tiramisu', 'quesadilla', 'bruschetta',
+    'inception', 'frankenstein', 'godfather', 'matilda', 'jurassicpark', 'narnia', 'casablanca', 'sherlock', 'dracula', 'mobydick',
+    'cleopatra', 'einstein', 'shakespeare', 'galileo', 'napoleon', 'davinci', 'aristotle', 'tutankhamun', 'beethoven', 'churchill',
+    'platypus', 'armadillo', 'chimpanzee', 'kangaroo', 'porcupine', 'hippopotamus', 'crocodile', 'giraffe', 'rhinoceros', 'octopus',
+    'kaleidoscope', 'juxtapose', 'quizzical', 'zephyr', 'whirlwind', 'cryptic', 'bungalow', 'symphony', 'vibrant', 'zenith'
+];
+    let chosenWord = words[Math.floor(Math.random() * words.length)];
+    let guessedWord = Array(chosenWord.length).fill('_');
+    let guessedLetters = [];
+    let wrongGuesses = 0;
+    const maxWrongAttempts = 6;
+    const hangmanStages = [
+        "[ ]---|",
+        "[ ]---|\n   O",
+        "[ ]---|\n   O\n   |",
+        "[ ]---|\n   O\n  /|",
+        "[ ]---|\n   O\n  /|\\",
+        "[ ]---|\n   O\n  /|\\\n  /",
+        "[ ]---|\n   O\n  /|\\\n  / \\",
+    ];
+
+    function updateHangmanDrawing() {
+        document.getElementById('hangmanDrawing').innerText = hangmanStages[wrongGuesses];
+    }
+
+    function updateWord() {
+        document.getElementById('word').innerText = `Word: ${guessedWord.join(' ')}`;
+    }
+
+    function updateLetters() {
+        document.getElementById('letters').innerText = `Letters: ${guessedLetters.join(', ')}`;
+    }
+
+    function updateMessage(message) {
+        document.getElementById('message').innerText = message;
+    }
+
+    function checkGameOver() {
+        if (wrongGuesses === maxWrongAttempts) {
+            updateMessage('Game Over! You lost. The word was ' + chosenWord);
+            document.removeEventListener('keydown', handleGuess);
+        } else if (guessedWord.join('') === chosenWord) {
+            updateMessage('Congratulations! You won!');
+            document.removeEventListener('keydown', handleGuess);
+        }
+    }
+
+    function handleGuess(event) {
+        if (wrongGuesses === maxWrongAttempts || guessedWord.join('') === chosenWord) {
+            return;
+        }
+        const guessedLetter = event.key.toLowerCase();
+        if (!/[a-z]/.test(guessedLetter) || guessedLetters.includes(guessedLetter)) {
+            return;
+        }
+        guessedLetters.push(guessedLetter);
+        if (chosenWord.includes(guessedLetter)) {
+            for (let i = 0; i < chosenWord.length; i++) {
+                if (chosenWord[i] === guessedLetter) {
+                    guessedWord[i] = guessedLetter;
+                }
+            }
+            updateWord();
+        } else {
+            wrongGuesses++;
+            updateHangmanDrawing();
+        }
+        updateLetters();
+        checkGameOver();
+    }
+
+    document.addEventListener('keydown', handleGuess);
+
+    updateWord();
+    updateLetters();
+    updateMessage('Try to guess the word!');
+</script>
+<button onclick="resetGame()">Reset Game</button>
+<script>
+    function resetGame() {
+        document.addEventListener('keydown', handleGuess);
+        chosenWord = words[Math.floor(Math.random() * words.length)];
+        guessedWord = Array(chosenWord.length).fill('_');
+        guessedLetters = [];
+        wrongGuesses = 0;
+        updateWord();
+        updateLetters();
+        updateHangmanDrawing();
+        updateMessage('Try to guess the word!');
+    }
+</script>
+</body>
+</html>
