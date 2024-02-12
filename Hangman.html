@@ -53,11 +53,7 @@
     }
     /* Additional style for the input field */
     .inputField {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        opacity: 0.5; /* Make the field slightly visible or set to 0 to hide */
+        margin-top: 20px; /* Adjust the margin-top */
     }
 </style>
 </head>
@@ -70,6 +66,7 @@
 <div id="message"></div>
 <!-- Add a text input field -->
 <input type="text" id="guessInput" class="inputField" maxlength="1" autocomplete="off">
+<button onclick="resetGame()">Reset Game</button>
 <script>
     function goToHome() {
         window.location.href = 'Home.html';
@@ -159,20 +156,6 @@
     updateWord();
     updateLetters();
     updateMessage('Try to guess the word!');
-</script>
-<button onclick="resetGame()">Reset Game</button>
-<script>
-    function resetGame() {
-        chosenWord = words[Math.floor(Math.random() * words.length)];
-        guessedWord = Array(chosenWord.length).fill('_');
-        guessedLetters = [];
-        wrongGuesses = 0;
-        updateWord();
-        updateLetters();
-        updateHangmanDrawing();
-        updateMessage('Try to guess the word!');
-        document.getElementById('guessInput').focus(); // Refocus on input field after reset
-    }
 </script>
 </body>
 </html>
