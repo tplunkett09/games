@@ -68,6 +68,9 @@
         </select>
     </div>
     <script>
+	    function goToHome() {
+            window.location.href = 'Home.html';
+        }
         let currentPlayer = 'X';
         let isTwoPlayerMode = true; // Default to 2 players
         const cells = document.querySelectorAll('.cell');
