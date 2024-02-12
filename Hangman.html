@@ -23,7 +23,7 @@
         font-size: 2em;
         margin-top: 20px;
     }
-		        /* Styles for home button */
+    /* Styles for home button */
     .home-button {
         position: absolute;
         top: 10px;
@@ -38,6 +38,19 @@
     .home-button:hover {
         background-color: #0056b3; /* Darker shade of blue on hover */
     }
+
+    /* Responsive styles */
+    @media screen and (max-width: 600px) {
+        #hangmanDrawing {
+            font-size: 1.5em;
+        }
+        #word {
+            font-size: 1em;
+        }
+        #letters {
+            font-size: 0.8em;
+        }
+    }
 </style>
 </head>
 <body>
@@ -48,9 +61,9 @@
 <div id="letters">Letters: </div>
 <div id="message"></div>
 <script>
-	    function goToHome() {
+    function goToHome() {
         window.location.href = 'Home.html';
-		}
+    }
     const words = ['hangman', 'javascript', 'programming', 'computer', 'internet', 'developer', 'moana', 'maui', 'elsa', 'anna', 'frozen', 'kristoff', 'sven', 'olaf', 'tarzan', 'hercules',
     'megara', 'peterpan', 'winniethepooh', 'piglet', 'tigger', 'eeyore', 'mulan', 'shang', 'mushu', 'coco',
     'miguel', 'héctor', 'ernesto', 'dory', 'nemo', 'marlin', 'buzzlightyear', 'toystory', 'frozone', 'incredibles',
