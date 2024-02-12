@@ -51,6 +51,14 @@
             font-size: 0.8em;
         }
     }
+    /* Additional style for the input field */
+    .inputField {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0.5; /* Make the field slightly visible or set to 0 to hide */
+    }
 </style>
 </head>
 <body>
@@ -60,6 +68,8 @@
 <div id="word">Word: </div>
 <div id="letters">Letters: </div>
 <div id="message"></div>
+<!-- Add a text input field -->
+<input type="text" id="guessInput" class="inputField" maxlength="1" autocomplete="off">
 <script>
     function goToHome() {
         window.location.href = 'Home.html';
@@ -118,14 +128,15 @@
         }
     }
 
-    function handleGuess(event) {
-        if (wrongGuesses === maxWrongAttempts || guessedWord.join('') === chosenWord) {
-            return;
+    function handleGuess() {
+        const inputField = document.getElementById('guessInput');
+        const guessedLetter = inputField.value.toLowerCase();
+        inputField.value = ''; // Clear input field after each guess
+
+        if (!/[a-z]/.test(guessedLetter) || guessedLetters.includes(guessedLetter) || guessedLetter === '') {
+            return; // Ignore invalid or repeated inputs
         }
-        const guessedLetter = event.key.toLowerCase();
-        if (!/[a-z]/.test(guessedLetter) || guessedLetters.includes(guessedLetter)) {
-            return;
-        }
+
         guessedLetters.push(guessedLetter);
         if (chosenWord.includes(guessedLetter)) {
             for (let i = 0; i < chosenWord.length; i++) {
@@ -142,7 +153,8 @@
         checkGameOver();
     }
 
-    document.addEventListener('keydown', handleGuess);
+    document.getElementById('guessInput').addEventListener('input', handleGuess);
+    document.getElementById('guessInput').focus();
 
     updateWord();
     updateLetters();
@@ -151,7 +163,6 @@
 <button onclick="resetGame()">Reset Game</button>
 <script>
     function resetGame() {
-        document.addEventListener('keydown', handleGuess);
         chosenWord = words[Math.floor(Math.random() * words.length)];
         guessedWord = Array(chosenWord.length).fill('_');
         guessedLetters = [];
@@ -160,6 +171,7 @@
         updateLetters();
         updateHangmanDrawing();
         updateMessage('Try to guess the word!');
+        document.getElementById('guessInput').focus(); // Refocus on input field after reset
     }
 </script>
 </body>
