@@ -68,10 +68,8 @@
     </select>
 </div>
 <script>
-    function goToHome() {
-        window.location.href = 'Home.html';
-		}
     let currentPlayer = 'X';
+    let isTwoPlayerMode = true; // Default to 2 players
     const cells = document.querySelectorAll('.cell');
 
     cells.forEach(cell => {
@@ -79,6 +77,7 @@
     });
 
     function handleCellClick(e) {
+        if (isTwoPlayerMode && currentPlayer === 'O') return; // Allow only X to play in 2-player mode
         const cell = e.target;
         if (cell.textContent !== '') return;
 
