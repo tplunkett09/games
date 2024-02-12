@@ -53,13 +53,11 @@
     }
     /* Additional style for the input field */
     .inputField {
-        display: none; /* Hide the input field */
-    }
-    h1 {
-        margin-bottom: 0; /* Remove default margin */
-    }
-    .input-container {
-        margin-top: 20px;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0.5; /* Make the field slightly visible or set to 0 to hide */
     }
 </style>
 </head>
@@ -70,10 +68,8 @@
 <div id="word">Word: </div>
 <div id="letters">Letters: </div>
 <div id="message"></div>
-<div class="input-container">
-    <!-- Add a text input field -->
-    <input type="text" id="guessInput" class="inputField" maxlength="1" autocomplete="off">
-</div>
+<!-- Add a text input field -->
+<input type="text" id="guessInput" class="inputField" maxlength="1" autocomplete="off">
 <script>
     function goToHome() {
         window.location.href = 'Home.html';

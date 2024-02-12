@@ -6,27 +6,26 @@
     <title>Tic-Tac-Toe - Variable Difficulty</title>
     <style>
         .cell {
-            width: 80px; /* Adjusted width for smaller screens */
-            height: 80px; /* Adjusted height for smaller screens */
+            width: 100px;
+            height: 100px;
             border: 1px solid #000;
             display: inline-block;
             vertical-align: top;
             text-align: center;
-            font-size: 2.5em; /* Adjusted font size for smaller screens */
+            font-size: 3em;
             cursor: pointer;
         }
 
         #board {
-            width: 240px; /* Adjusted width for smaller screens */
+            width: 320px;
             margin: 0 auto;
-            margin-top: 30px; /* Adjusted margin-top for smaller screens */
+            margin-top: 50px;
         }
 
         .cell:hover {
             background-color: #eee;
         }
-
-        /* Styles for home button */
+		        /* Styles for home button */
         .home-button {
             position: absolute;
             top: 10px;
@@ -38,198 +37,190 @@
             cursor: pointer;
             font-size: 1rem;
         }
-
         .home-button:hover {
             background-color: #0056b3; /* Darker shade of blue on hover */
-        }
-
-        /* Additional styles for checkbox and select */
-        input[type="checkbox"],
-        select {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            font-size: 1rem; /* Adjusted font size for smaller screens */
         }
     </style>
 </head>
 <body>
     <button class="home-button" onclick="goToHome()">Home</button>
-    <div id="board">
-        <div class="cell" id="cell-1"></div>
-        <div class="cell" id="cell-2"></div>
-        <div class="cell" id="cell-3"></div>
-        <div class="cell" id="cell-4"></div>
-        <div class="cell" id="cell-5"></div>
-        <div class="cell" id="cell-6"></div>
-        <div class="cell" id="cell-7"></div>
-        <div class="cell" id="cell-8"></div>
-        <div class="cell" id="cell-9"></div>
-    </div>
-    <div>
-        <input type="checkbox" id="singlePlayerCheckbox">
-        <label for="singlePlayerCheckbox">Single Player Mode</label>
-    </div>
-    <div>
-        <label for="difficulty">Select Difficulty:</label>
-        <select id="difficulty">
-            <option value="easy">Easy</option>
-            <option value="hard">Hard</option>
-            <option value="expert">Expert</option>
-        </select>
-    </div>
-    <script>
-        function goToHome() {
-            window.location.href = 'Home.html';
-        }
-        let currentPlayer = 'X';
-        const cells = document.querySelectorAll('.cell');
+<div id="board">
+    <div class="cell" id="cell-1"></div>
+    <div class="cell" id="cell-2"></div>
+    <div class="cell" id="cell-3"></div>
+    <div class="cell" id="cell-4"></div>
+    <div class="cell" id="cell-5"></div>
+    <div class="cell" id="cell-6"></div>
+    <div class="cell" id="cell-7"></div>
+    <div class="cell" id="cell-8"></div>
+    <div class="cell" id="cell-9"></div>
+</div>
+<div>
+    <input type="checkbox" id="singlePlayerCheckbox">
+    <label for="singlePlayerCheckbox">Single Player Mode</label>
+</div>
+<div>
+    <label for="difficulty">Select Difficulty:</label>
+    <select id="difficulty">
+        <option value="easy">Easy</option>
+        <option value="hard">Hard</option>
+        <option value="expert">Expert</option>
+    </select>
+</div>
+<script>
+    function goToHome() {
+        window.location.href = 'Home.html';
+		}
+    let currentPlayer = 'X';
+    const cells = document.querySelectorAll('.cell');
 
+    cells.forEach(cell => {
+        cell.addEventListener('click', handleCellClick);
+    });
+
+    function handleCellClick(e) {
+        const cell = e.target;
+        if (cell.textContent !== '') return;
+
+        cell.textContent = currentPlayer;
+        if (checkWin()) {
+            alert(`Player ${currentPlayer} wins!`);
+            resetGame();
+            return;
+        }
+        if (checkDraw()) {
+            alert("It's a draw!");
+            resetGame();
+            return;
+        }
+        currentPlayer = 'O';
+        if (document.getElementById('singlePlayerCheckbox').checked) {
+            setTimeout(computerMove, 200); // Adding a slight delay for the computer move
+        } else {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+    }
+
+function computerMove() {
+    let difficulty = document.getElementById('difficulty').value;
+    switch (difficulty) {
+        case 'easy':
+            makeRandomMove();
+            break;
+        case 'hard':
+            // Implement some strategy + random
+            if (!blockWinningMove()) {
+                makeRandomMove();
+            }
+            break;
+        case 'expert':
+            // Minimax algorithm with depth 5 and some randomness
+            const bestMove = minimax(cells, currentPlayer, 0, true, 5); // Depth 5
+            const randomMoveIndex = Math.floor(Math.random() * bestMove.length); // Introduce randomness
+            cells[bestMove[randomMoveIndex].index].textContent = 'O';
+            break;
+    }
+    if (checkWin()) {
+        alert('Computer wins!');
+        resetGame();
+    } else if (checkDraw()) {
+        alert("It's a draw!");
+        resetGame();
+    } else {
+        currentPlayer = 'X';
+    }
+}
+
+function minimax(board, player, depth, isMaximizing, maxDepth) {
+    if (checkWin() || checkDraw() || depth >= maxDepth) {
+        if (checkWin() && currentPlayer === 'O') {
+            return [{ score: 1 - depth }];
+        } else if (checkWin() && currentPlayer === 'X') {
+            return [{ score: depth - 1 }];
+        }
+        return [{ score: 0 }];
+    }
+
+    const scores = [];
+    const moves = [];
+
+    for (let i = 0; i < board.length; i++) {
+        if (board[i].textContent === '') {
+            board[i].textContent = player;
+            if (player === 'O') {
+                const score = minimax(board, 'X', depth + 1, !isMaximizing, maxDepth)[0].score;
+                scores.push(score);
+                moves.push({ index: i, score });
+            } else {
+                const score = minimax(board, 'O', depth + 1, !isMaximizing, maxDepth)[0].score;
+                scores.push(score);
+                moves.push({ index: i, score });
+            }
+            board[i].textContent = '';
+        }
+    }
+
+    if (isMaximizing) {
+        const maxScore = Math.max(...scores);
+        const bestMoves = moves.filter(move => move.score === maxScore);
+        return bestMoves;
+    } else {
+        const minScore = Math.min(...scores);
+        const bestMoves = moves.filter(move => move.score === minScore);
+        return bestMoves;
+    }
+}
+
+
+    function makeRandomMove() {
+        const emptyCells = [...cells].filter(cell => cell.textContent === '');
+        if (emptyCells.length > 0) {
+            const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            randomCell.textContent = 'O';
+        }
+    }
+
+    function blockWinningMove() {
+        // Simplified example: You would add logic here to check for and block potential winning moves
+        // This function should attempt to block the player's winning move and/or set up a win for the computer
+        return false; // Return true if a move is made, false otherwise
+    }
+
+    function checkWin() {
+        const winningConditions = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        for (let condition of winningConditions) {
+            const [a, b, c] = condition;
+            if (
+                cells[a].textContent &&
+                cells[a].textContent === cells[b].textContent &&
+                cells[a].textContent === cells[c].textContent
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function checkDraw() {
+        return [...cells].every(cell => cell.textContent !== '');
+    }
+
+    function resetGame() {
         cells.forEach(cell => {
-            cell.addEventListener('click', handleCellClick);
+            cell.textContent = '';
         });
-
-        function handleCellClick(e) {
-            const cell = e.target;
-            if (cell.textContent !== '') return;
-
-            cell.textContent = currentPlayer;
-            if (checkWin()) {
-                alert(`Player ${currentPlayer} wins!`);
-                resetGame();
-                return;
-            }
-            if (checkDraw()) {
-                alert("It's a draw!");
-                resetGame();
-                return;
-            }
-            currentPlayer = 'O';
-            if (document.getElementById('singlePlayerCheckbox').checked) {
-                setTimeout(computerMove, 200); // Adding a slight delay for the computer move
-            } else {
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-            }
-        }
-
-        function computerMove() {
-            let difficulty = document.getElementById('difficulty').value;
-            switch (difficulty) {
-                case 'easy':
-                    makeRandomMove();
-                    break;
-                case 'hard':
-                    // Implement some strategy + random
-                    if (!blockWinningMove()) {
-                        makeRandomMove();
-                    }
-                    break;
-                case 'expert':
-                    // Minimax algorithm with depth 5 and some randomness
-                    const bestMove = minimax(cells, currentPlayer, 0, true, 5); // Depth 5
-                    const randomMoveIndex = Math.floor(Math.random() * bestMove.length); // Introduce randomness
-                    cells[bestMove[randomMoveIndex].index].textContent = 'O';
-                    break;
-            }
-            if (checkWin()) {
-                alert('Computer wins!');
-                resetGame();
-            } else if (checkDraw()) {
-                alert("It's a draw!");
-                resetGame();
-            } else {
-                currentPlayer = 'X';
-            }
-        }
-
-        function minimax(board, player, depth, isMaximizing, maxDepth) {
-            if (checkWin() || checkDraw() || depth >= maxDepth) {
-                if (checkWin() && currentPlayer === 'O') {
-                    return [{ score: 1 - depth }];
-                } else if (checkWin() && currentPlayer === 'X') {
-                    return [{ score: depth - 1 }];
-                }
-                return [{ score: 0 }];
-            }
-
-            const scores = [];
-            const moves = [];
-
-            for (let i = 0; i < board.length; i++) {
-                if (board[i].textContent === '') {
-                    board[i].textContent = player;
-                    if (player === 'O') {
-                        const score = minimax(board, 'X', depth + 1, !isMaximizing, maxDepth)[0].score;
-                        scores.push(score);
-                        moves.push({ index: i, score });
-                    } else {
-                        const score = minimax(board, 'O', depth + 1, !isMaximizing, maxDepth)[0].score;
-                        scores.push(score);
-                        moves.push({ index: i, score });
-                    }
-                    board[i].textContent = '';
-                }
-            }
-
-            if (isMaximizing) {
-                const maxScore = Math.max(...scores);
-                const bestMoves = moves.filter(move => move.score === maxScore);
-                return bestMoves;
-            } else {
-                const minScore = Math.min(...scores);
-                const bestMoves = moves.filter(move => move.score === minScore);
-                return bestMoves;
-            }
-        }
-
-        function makeRandomMove() {
-            const emptyCells = [...cells].filter(cell => cell.textContent === '');
-            if (emptyCells.length > 0) {
-                const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-                randomCell.textContent = 'O';
-            }
-        }
-
-        function blockWinningMove() {
-            // Simplified example: You would add logic here to check for and block potential winning moves
-            // This function should attempt to block the player's winning move and/or set up a win for the computer
-            return false; // Return true if a move is made, false otherwise
-        }
-
-        function checkWin() {
-            const winningConditions = [
-                [0, 1, 2],
-                [3, 4, 5],
-                [6, 7, 8],
-                [0, 3, 6],
-                [1, 4, 7],
-                [2, 5, 8],
-                [0, 4, 8],
-                [2, 4, 6]
-            ];
-
-            for (let condition of winningConditions) {
-                const [a, b, c] = condition;
-                if (
-                    cells[a].textContent &&
-                    cells[a].textContent === cells[b].textContent &&
-                    cells[a].textContent === cells[c].textContent
-                ) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function checkDraw() {
-            return [...cells].every(cell => cell.textContent !== '');
-        }
-
-        function resetGame() {
-            cells.forEach(cell => {
-                cell.textContent = '';
-            });
-            currentPlayer = 'X';
-        }
-    </script>
+        currentPlayer = 'X';
+    }
+</script>
 </body>
 </html>
