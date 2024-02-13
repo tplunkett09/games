@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<button class="home-button" onclick="goToHome()">Home!</button>
+    <button class="home-button" onclick="goToHome()">Home!</button>
     <title>Snake Game</title>
     <style>
-		body {
+        body {
             overflow: hidden; /* Prevent page scrolling */
             margin: 0; /* Remove default body margin */
         }
@@ -16,40 +16,40 @@
             margin: 40px auto;
         }
         #pauseButton {
-        position: absolute;
-        top: 5px;
-        right: 9px;
-        background-color: #007bff;
-        color: #fff;
-        padding: 8px 12px;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
+            position: absolute;
+            top: 5px;
+            right: 9px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 8px 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
         }
-		    /* Styles for home button */
-    .home-button {
-        position: absolute;
-        top: 5px;
-        left: 8px;
-        background-color: #007bff;
-        color: #fff;
-        padding: 8px 12px;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-    }
-    .home-button:hover {
-        background-color: #0056b3; /* Darker shade of blue on hover */
-    }
+        /* Styles for home button */
+        .home-button {
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 8px 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .home-button:hover {
+            background-color: #0056b3; /* Darker shade of blue on hover */
+        }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
     <button id="pauseButton">Pause</button>
     <script>
-	    function goToHome() {
-        window.location.href = 'Home.html';
-		}
+        function goToHome() {
+            window.location.href = 'Home.html';
+        }
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         let snake = [{x: 200, y: 200}];
@@ -115,8 +115,11 @@
         }
 
         function spawnFood() {
-            food.x = Math.floor(Math.random() * ((canvas.width - 2) / 10)) * 10; /* Subtract 2 pixels for border */
-            food.y = Math.floor(Math.random() * ((canvas.height - 2) / 10)) * 10; /* Subtract 2 pixels for border */
+            const borderOffset = 1; // Border width
+            const maxWidth = (canvas.width - borderOffset) / 10; // Adjusted width
+            const maxHeight = (canvas.height - borderOffset) / 10; // Adjusted height
+            food.x = Math.floor(Math.random() * maxWidth) * 10;
+            food.y = Math.floor(Math.random() * maxHeight) * 10;
             for (let i = 0; i < snake.length; i++) {
                 if (food.x === snake[i].x && food.y === snake[i].y) {
                     spawnFood();
