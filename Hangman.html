@@ -71,7 +71,11 @@
 <div id="message"></div>
 <!-- Add a text input field -->
 <input type="text" id="guessInput" class="inputField" maxlength="1" autocomplete="off">
+ inputField.focus(); // Refocus on input field after reset
+
 <script>
+	const inputField = document.getElementById('guessInput');
+    inputField.focus(); // Set focus on the input field
     function goToHome() {
         window.location.href = 'Home.html';
     }
