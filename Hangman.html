@@ -172,7 +172,9 @@
         updateLetters();
         updateHangmanDrawing();
         updateMessage('Try to guess the word!');
-        document.getElementById('guessInput').focus(); // Refocus on input field after reset
+        const inputField = document.getElementById('guessInput');
+        inputField.removeAttribute('readonly'); // Remove readonly attribute
+        inputField.focus(); // Refocus on input field after reset
     }
 </script>
 </body>
