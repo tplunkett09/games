@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <button class="home-button" onclick="goToHome()">Home</button>
+    <button class="home-button" onclick="goToHome()">Home!</button>
     <title>Snake Game</title>
     <style>
         body {
@@ -116,7 +116,7 @@
 
         function spawnFood() {
             const borderOffset = 1; // Border width
-            const maxWidth = (canvas.width - borderOffset) / 10; // Adjusted width
+            const maxWidth = (canvas.width - borderOffset - 5) / 10; // Adjusted width
             const maxHeight = (canvas.height - borderOffset) / 10; // Adjusted height
             food.x = Math.floor(Math.random() * maxWidth) * 10;
             food.y = Math.floor(Math.random() * maxHeight) * 10;
