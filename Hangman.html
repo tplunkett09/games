@@ -60,10 +60,11 @@
         transform: translateX(-50%);
         opacity: 0; /* Make the field slightly visible or set to 0 to hide */
     }
-	    /* Style for the focus button */
+
+    /* Style for the focus button */
     #focusButton {
         position: absolute;
-        top: 10px;
+        top: 50px;
         right: 10px;
         background-color: #007bff;
         color: #fff;
@@ -76,7 +77,7 @@
 </head>
 <body>
 <button class="home-button" onclick="goToHome()">Home</button>
-<button id="focusButton" onclick="setFocus()">Keyboard</button>
+<button id="focusButton" onclick="setFocus()">Show Keyboard</button>
 <h1>Hangman Game</h1>
 <div id="hangmanDrawing">[ ]---|</div>
 <div id="word">Word: </div>
