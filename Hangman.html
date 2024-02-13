@@ -160,30 +160,36 @@
         }
     }
 
-    function handleGuess() {
-        const inputField = document.getElementById('guessInput');
-        const guessedLetter = inputField.value.toLowerCase();
-        inputField.value = ''; // Clear input field after each guess
-
-        if (!/[a-z]/.test(guessedLetter) || guessedLetters.includes(guessedLetter) || guessedLetter === '') {
-            return; // Ignore invalid or repeated inputs
-        }
-
-        guessedLetters.push(guessedLetter);
-        if (chosenWord.includes(guessedLetter)) {
-            for (let i = 0; i < chosenWord.length; i++) {
-                if (chosenWord[i] === guessedLetter) {
-                    guessedWord[i] = guessedLetter;
-                }
-            }
-            updateWord();
-        } else {
-            wrongGuesses++;
-            updateHangmanDrawing();
-        }
-        updateLetters();
-        checkGameOver();
+function handleGuess() {
+    // Check if the game is over
+    if (wrongGuesses === maxWrongAttempts || guessedWord.join('') === chosenWord) {
+        return;
     }
+
+    const inputField = document.getElementById('guessInput');
+    const guessedLetter = inputField.value.toLowerCase();
+    inputField.value = ''; // Clear input field after each guess
+
+    if (!/[a-z]/.test(guessedLetter) || guessedLetters.includes(guessedLetter) || guessedLetter === '') {
+        return; // Ignore invalid or repeated inputs
+    }
+
+    guessedLetters.push(guessedLetter);
+    if (chosenWord.includes(guessedLetter)) {
+        for (let i = 0; i < chosenWord.length; i++) {
+            if (chosenWord[i] === guessedLetter) {
+                guessedWord[i] = guessedLetter;
+            }
+        }
+        updateWord();
+    } else {
+        wrongGuesses++;
+        updateHangmanDrawing();
+    }
+    updateLetters();
+    checkGameOver();
+}
+
 
     document.getElementById('guessInput').addEventListener('input', handleGuess);
     document.getElementById('guessInput').focus();
