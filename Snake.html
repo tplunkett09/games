@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<button class="home-button" onclick="goToHome()">Home</button>
+	<button class="home-button" onclick="goToHome()">Home!</button>
     <title>Snake Game</title>
     <style>
 		body {
@@ -79,7 +79,7 @@
                 }
                 snake.forEach(drawSnake);
                 drawFood();
-                if (head.x < 0 || head.x >= canvas.width - 10 || head.y < 0 || head.y >= canvas.height - 10) {
+                if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
                     resetGame();
                 }
                 for (let i = 1; i < snake.length; i++) {
@@ -115,8 +115,8 @@
         }
 
         function spawnFood() {
-            food.x = Math.floor(Math.random() * ((canvas.width - 10) / 10)) * 10;
-            food.y = Math.floor(Math.random() * ((canvas.height - 10) / 10)) * 10;
+            food.x = Math.floor(Math.random() * (canvas.width / 10)) * 10;
+            food.y = Math.floor(Math.random() * (canvas.height / 10)) * 10;
             for (let i = 0; i < snake.length; i++) {
                 if (food.x === snake[i].x && food.y === snake[i].y) {
                     spawnFood();
@@ -193,7 +193,7 @@
 
         function resizeCanvas() {
             canvas.width = window.innerWidth - 20;
-            canvas.height = window.innerHeight - 99; /* Adjusted height */
+            canvas.height = window.innerHeight - 95; /* Adjusted height */
             spawnFood();
         }
 
