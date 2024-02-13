@@ -3,23 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<button class="home-button" onclick="goToHome()">Home</button>
     <title>Snake Game</title>
     <style>
         canvas {
             border: 1px solid black;
             display: block;
-            margin: 0 auto;
+            margin: 40px auto;
         }
         #pauseButton {
-            display: block;
-            margin: 10px auto;
+        position: absolute;
+        top: 5px;
+        right: 9px;
+        background-color: #007bff;
+        color: #fff;
+        padding: 8px 12px;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
         }
+		    /* Styles for home button */
+    .home-button {
+        position: absolute;
+        top: 5px;
+        left: 7px;
+        background-color: #007bff;
+        color: #fff;
+        padding: 8px 12px;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    .home-button:hover {
+        background-color: #0056b3; /* Darker shade of blue on hover */
+    }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
     <button id="pauseButton">Pause</button>
     <script>
+	    function goToHome() {
+        window.location.href = 'Home.html';
+		}
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         let snake = [{x: 200, y: 200}];
