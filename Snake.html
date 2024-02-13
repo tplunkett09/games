@@ -115,8 +115,8 @@
         }
 
         function spawnFood() {
-            food.x = Math.floor(Math.random() * (canvas.width / 10)) * 10;
-            food.y = Math.floor(Math.random() * (canvas.height / 10)) * 10;
+            food.x = Math.floor(Math.random() * ((canvas.width - 2) / 10)) * 10; /* Subtract 2 pixels for border */
+            food.y = Math.floor(Math.random() * ((canvas.height - 2) / 10)) * 10; /* Subtract 2 pixels for border */
             for (let i = 0; i < snake.length; i++) {
                 if (food.x === snake[i].x && food.y === snake[i].y) {
                     spawnFood();
