@@ -8,26 +8,20 @@
     body {
         font-family: Arial, sans-serif;
         text-align: center;
+        position: relative; /* Ensure relative positioning for the body */
     }
-    #word {
-        margin-top: 20px;
-        font-size: 1.5em;
+    #title-container {
+        position: relative; /* Ensure relative positioning for the title container */
+        z-index: 1; /* Ensure the title is above other content */
     }
-    #letters {
-        margin-top: 20px;
+    #buttons-container {
+        position: absolute; /* Absolute positioning for the buttons */
+        top: 10px; /* Adjust top position as needed */
+        right: 10px; /* Adjust right position as needed */
+        z-index: 2; /* Ensure the buttons are above other content */
     }
-    #message {
-        margin-top: 20px;
-    }
-    #hangmanDrawing {
-        font-size: 2em;
-        margin-top: 20px;
-    }
-    /* Styles for home button */
+    /* Additional styles for buttons */
     .home-button {
-        position: absolute;
-        top: 5px;
-        left: 10px;
         background-color: #007bff;
         color: #fff;
         padding: 8px 12px;
@@ -36,49 +30,18 @@
         font-size: 1rem;
     }
     .home-button:hover {
-        background-color: #0056b3; /* Darker shade of blue on hover */
-    }
-
-    /* Responsive styles */
-    @media screen and (max-width: 600px) {
-        #hangmanDrawing {
-            font-size: 1.5em;
-        }
-        #word {
-            font-size: 1em;
-        }
-        #letters {
-            font-size: 0.8em;
-        }
-    }
-    /* Additional style for the input field */
-    .inputField {
-        margin-top: 25px; /* Move the input field 5px below */
-        position: absolute;
-        bottom: 10;
-        left: 50%;
-        transform: translateX(-50%);
-        opacity: 0; /* Make the field slightly visible or set to 0 to hide */
-    }
-
-    /* Style for the focus button */
-    #focusButton {
-        position: absolute;
-        top: 5px;
-        right: 10px;
-        background-color: #007bff;
-        color: #fff;
-        padding: 8px 12px;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
+        background-color: #0056b3;
     }
 </style>
 </head>
 <body>
-<button class="home-button" onclick="goToHome()">Home</button>
-<button id="focusButton" onclick="setFocus()">Show Keyboard</button>
-<h1>Hangman Game</h1>
+<div id="buttons-container">
+    <button class="home-button" onclick="goToHome()">Home</button>
+    <button id="focusButton" onclick="setFocus()">Show Keyboard</button>
+</div>
+<div id="title-container">
+    <h1>Hangman Game</h1>
+</div>
 <div id="hangmanDrawing">[ ]---|</div>
 <div id="word">Word: </div>
 <div id="letters">Letters: </div>
