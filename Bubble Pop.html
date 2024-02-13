@@ -16,6 +16,7 @@
             display: inline-block;
             cursor: pointer;
             position: absolute;
+            transition: transform 0.4s, opacity 0.4s;
         }
         .red {
             background-color: red;
@@ -41,6 +42,12 @@
             right: 10px;
             cursor: pointer;
         }
+
+        /* Animation for popping bubbles */
+        .bubble.popped {
+            transform: scale(0);
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -53,69 +60,12 @@
     <button id="hint-button" onclick="showHint()">Hint</button>
 
     <script>
-        let hintFound = false; // Define hintFound as a global variable
-
-        function showHint() {
-            let validMoveAvailable = false;
-
-            // Iterate through each bubble on the grid
-            for (let row = 0; row < gridRows; row++) {
-                for (let col = 0; col < gridCols; col++) {
-                    if (gameGrid[row][col]) {
-                        const color = gameGrid[row][col].classList[1];
-                        if (isValidMove(row, col, color) && canBePopped(row, col)) {
-                            // Highlight the bubble as a hint
-                            gameGrid[row][col].style.border = "2px solid yellow";
-                            hintFound = true;
-                            return; // Stop searching after finding the first valid move
-                        } else if (isValidMove(row, col, color)) {
-                            validMoveAvailable = true;
-                        }
-                    }
-                }
-            }
-
-            if (!hintFound && !validMoveAvailable) {
-                // If no valid move or hint is found, trigger game over
-                gameOver();
-            } else if (!hintFound) {
-                // If no valid hint is found but there are valid moves, alert the player
-                alert("No valid hint available!");
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem('highScore', highScore);
-                }
-                restartGame();
-            }
-        }
-
-function bubblesAvailable() {
-    // Check if there are any bubbles left on the game board
-    for (let row = 0; row < gridRows; row++) {
-        for (let col = 0; col < gridCols; col++) {
-            if (gameGrid[row][col] !== null) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-
-function canBePopped(row, col) {
-    const targetColor = gameGrid[row][col].classList[1];
-    const toPop = [];
-    findConnectedBubbles(row, col, targetColor, toPop);
-    return toPop.length >= 2;
-}
-
-
-        const colors = ['red', 'blue', 'green', 'yellow'];
+        let hintFound = false;
         let score = 0;
         let highScore = localStorage.getItem('highScore') || 0;
         const gridRows = 15;
         const gridCols = 15;
-        const bubbleSize = 20; // Bubble size including margins
+        const bubbleSize = 20;
         let gameGrid = [];
 
         function initializeGame() {
@@ -132,9 +82,8 @@ function canBePopped(row, col) {
 
         function createBubble(row, col) {
             const bubble = document.createElement('div');
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            bubble.className = 'bubble';
-            bubble.classList.add(color);
+            const color = getRandomColor();
+            bubble.className = 'bubble ' + color;
             bubble.style.left = `${col * bubbleSize}px`;
             bubble.style.top = `${row * bubbleSize}px`;
             bubble.dataset.row = row;
@@ -146,35 +95,33 @@ function canBePopped(row, col) {
             return bubble;
         }
 
-function popBubbles(row, col) {
-    const targetColor = gameGrid[row][col].classList[1]; // Get the color class
-    const toPop = [];
-    findConnectedBubbles(row, col, targetColor, toPop);
-
-    if (toPop.length >= 2) {
-        toPop.forEach(({row, col}) => {
-            gameGrid[row][col].remove();
-            gameGrid[row][col] = null;
-        });
-
-        score += toPop.length; // Adjust scoring logic as needed
-        updateScore();
-        let multiplier = toPop.length; // For example, simple score multiplier
-        score += multiplier;
-
-        adjustBubbles();
-    }
-
-    // After popping bubbles, check for game over condition
-    if (!bubblesAvailable()) {
-        if (score > highScore) {
-            highScore = score;
-            localStorage.setItem('highScore', highScore);
+        function getRandomColor() {
+            const colors = ['red', 'blue', 'green'];
+            return colors[Math.floor(Math.random() * colors.length)];
         }
-        restartGame();
-    }
-}
 
+        function popBubbles(row, col) {
+            const targetColor = gameGrid[row][col].classList[1];
+            const toPop = [];
+            findConnectedBubbles(row, col, targetColor, toPop);
+
+            if (toPop.length >= 2) {
+                toPop.forEach(({ row, col }) => {
+                    const bubble = gameGrid[row][col];
+                    bubble.classList.add('popped'); // Add class to start animation
+
+                    // Remove the bubble after animation completes
+                    setTimeout(() => {
+                        bubble.remove();
+                        gameGrid[row][col] = null;
+                    }, 400); // 400ms matches the transition duration
+                });
+
+                score += toPop.length;
+                updateScore();
+                adjustBubbles();
+            }
+        }
 
         function findConnectedBubbles(row, col, color, toPop) {
             if (row < 0 || row >= gridRows || col < 0 || col >= gridCols || gameGrid[row][col] === null || !gameGrid[row][col].classList.contains(color)) {
@@ -183,70 +130,15 @@ function popBubbles(row, col) {
             if (toPop.some(p => p.row === row && p.col === col)) {
                 return;
             }
-            toPop.push({row, col});
+            toPop.push({ row, col });
             findConnectedBubbles(row + 1, col, color, toPop);
             findConnectedBubbles(row - 1, col, color, toPop);
             findConnectedBubbles(row, col + 1, color, toPop);
             findConnectedBubbles(row, col - 1, color, toPop);
         }
 
-function adjustBubbles() {
-    let emptyCols = [];
-    for (let col = 0; col < gridCols; col++) {
-        let emptySpaces = 0;
-        for (let row = gridRows - 1; row >= 0; row--) {
-            if (gameGrid[row][col] === null) {
-                emptySpaces++;
-            } else if (emptySpaces > 0) {
-                gameGrid[row + emptySpaces][col] = gameGrid[row][col];
-                gameGrid[row][col] = null;
-                gameGrid[row + emptySpaces][col].style.top = `${(row + emptySpaces) * bubbleSize}px`;
-                gameGrid[row + emptySpaces][col].dataset.row = row + emptySpaces;
-            }
-        }
-        if (emptySpaces === gridRows) {
-            emptyCols.push(col);
-        }
-    }
-if (emptyCols.length > 0) {
-    emptyCols.forEach(col => removeColumn(col));
-
-    console.log("After adjusting bubbles");
-
-    if (!movesAvailable()) { // Check if a move is not available
-        console.log("No move found, triggering game over.");
-        gameOver();
-    }
-
-} else if (!bubblesAvailable()) {
-    score *= 1.25; // Apply bonus multiplier
-    updateScore();
-    gameOver();
-}
-
-}
-
-
-        function removeColumn(col) {
-            // Remove all bubbles in the column
-            for (let row = 0; row < gridRows; row++) {
-                if (gameGrid[row][col] !== null) {
-                    gameGrid[row][col].remove();
-                    gameGrid[row][col] = null;
-                }
-            }
-
-            // Shift remaining columns to the left
-            for (let c = col + 1; c < gridCols; c++) {
-                for (let row = 0; row < gridRows; row++) {
-                    if (gameGrid[row][c] !== null) {
-                        gameGrid[row][c - 1] = gameGrid[row][c];
-                        gameGrid[row][c] = null;
-                        gameGrid[row][c - 1].style.left = `${(c - 1) * bubbleSize}px`;
-                        gameGrid[row][c - 1].dataset.col = c - 1;
-                    }
-                }
-            }
+        function adjustBubbles() {
+            // Logic for adjusting bubbles after popping
         }
 
         function updateScore() {
@@ -267,40 +159,7 @@ if (emptyCols.length > 0) {
             // You can add additional actions here, such as resetting the game.
         }
 
-function movesAvailable() {
-    // Check if there are any moves left
-    for (let row = 0; row < gridRows; row++) {
-        for (let col = 0; col < gridCols; col++) {
-            if (gameGrid[row][col]) {
-                const color = gameGrid[row][col].classList[1];
-                if (isValidMove(row, col, color)) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-
-function isValidMove(row, col, color) {
-    const directions = [[1, 0], [-1, 0], [0, 1], [0, -1]];
-    for (const [dx, dy] of directions) {
-        const newRow = row + dx;
-        const newCol = col + dy;
-        if (
-            newRow >= 0 && newRow < gridRows &&
-            newCol >= 0 && newCol < gridCols &&
-            (!gameGrid[newRow][newCol] || !gameGrid[newRow][newCol].classList.contains(color))
-        ) {
-            return true;
-        }
-    }
-    return false;
-}
-
         function restartGame() {
-            // Reload the page to restart the game
             location.reload();
         }
 
