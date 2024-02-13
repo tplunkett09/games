@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hangman Game</title>
 <style>
+	#title-container {
+        position: relative; /* Ensure relative positioning for the title container */
+        margin-top: 50px; /* Move the title down by 20px */
+    }
     body {
         font-family: Arial, sans-serif;
         text-align: center;
@@ -78,7 +82,9 @@
 <body>
 <button class="home-button" onclick="goToHome()">Home</button>
 <button id="focusButton" onclick="setFocus()">Show Keyboard</button>
-<h1>Hangman Game</h1>
+<div id="title-container">
+    <h1>Hangman Game</h1>
+</div>
 <div id="hangmanDrawing">[ ]---|</div>
 <div id="word">Word: </div>
 <div id="letters">Letters: </div>
