@@ -17,6 +17,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+			text-align: center;
         }
         h1 {
             font-size: 1.8rem;
@@ -24,7 +25,8 @@
         }
         .container {
             max-width: 90%; /* Adjusted for smaller screens */
-			margin-top: 50px; /* Move the title down by 20px */
+			position: relative; /* Ensure relative positioning for the title container */
+			margin-top: 50px; /* Move the title down by 50px */
             padding: 0 10px;
         }
         .form {
@@ -78,7 +80,8 @@
     <div class="container">
         <h1>Number Guessing Game</h1>
         <p id="highScore">High Score: N/A</p>
-        <p>We have selected a random number between 1 and 100. See if you can guess it in 10 turns or fewer. We'll tell you if your guess was too high or too low.</p>
+        <p>We have selected a random number between 1 and 100. See if you can guess it in 10 turns or fewer.</p>
+		<p>We'll tell you if your guess was too high or too low.</p>
         <div class="form">
             <label for="guessField">Enter a guess:</label>
             <input type="text" id="guessField" class="guessField">
