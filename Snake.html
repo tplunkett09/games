@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+        #pauseButton {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <button id="pauseButton">Pause</button>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        let snake = [{x: 200, y: 200}];
+        let dx = 10;
+        let dy = 0;
+        let score = 0;
+        let highScore = localStorage.getItem("snakeHighScore") || 0;
+        let gamePaused = false;
+        let food = {x: 0, y: 0};
+        spawnFood();
+
+        function gameLoop() {
+            if (!gamePaused) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+                snake.unshift(head);
+                const ateFood = snake[0].x === food.x && snake[0].y === food.y;
+                if (ateFood) {
+                    score++;
+                    if (score > highScore) {
+                        highScore = score;
+                        localStorage.setItem("snakeHighScore", highScore);
+                    }
+                    spawnFood();
+                } else {
+                    snake.pop();
+                }
+                snake.forEach(drawSnake);
+                drawFood();
+                if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+                    resetGame();
+                }
+                for (let i = 1; i < snake.length; i++) {
+                    if (head.x === snake[i].x && head.y === snake[i].y) {
+                        resetGame();
+                    }
+                }
+                ctx.fillStyle = "black";
+                ctx.font = "20px Arial";
+                ctx.fillText("Score: " + score, 10, 30);
+                ctx.fillText("High Score: " + highScore, 10, 60);
+            }
+            setTimeout(gameLoop, 100);
+        }
+
+        function resetGame() {
+            alert("Game Over! Your Score: " + score);
+            snake = [{x: 200, y: 200}];
+            dx = 10;
+            dy = 0;
+            score = 0;
+            spawnFood();
+        }
+
+        function drawSnake(snakePart) {
+            ctx.fillStyle = "green";
+            ctx.fillRect(snakePart.x, snakePart.y, 10, 10);
+        }
+
+        function drawFood() {
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, 10, 10);
+        }
+
+        function spawnFood() {
+            food.x = Math.floor(Math.random() * (canvas.width / 10)) * 10;
+            food.y = Math.floor(Math.random() * (canvas.height / 10)) * 10;
+            for (let i = 0; i < snake.length; i++) {
+                if (food.x === snake[i].x && food.y === snake[i].y) {
+                    spawnFood();
+                    return;
+                }
+            }
+        }
+
+        document.addEventListener("keydown", (event) => {
+            const keyPressed = event.key;
+            if (!gamePaused) {
+                if (keyPressed === "ArrowLeft" && dx === 0) {
+                    dx = -10;
+                    dy = 0;
+                } else if (keyPressed === "ArrowRight" && dx === 0) {
+                    dx = 10;
+                    dy = 0;
+                } else if (keyPressed === "ArrowUp" && dy === 0) {
+                    dx = 0;
+                    dy = -10;
+                } else if (keyPressed === "ArrowDown" && dy === 0) {
+                    dx = 0;
+                    dy = 10;
+                }
+            }
+        });
+
+        canvas.addEventListener("touchstart", handleTouchStart, false);
+        canvas.addEventListener("touchmove", handleTouchMove, false);
+
+        let xDown = null;
+        let yDown = null;
+
+        function handleTouchStart(event) {
+            const firstTouch = event.touches[0];
+            xDown = firstTouch.clientX;
+            yDown = firstTouch.clientY;
+        }
+
+        function handleTouchMove(event) {
+            if (!xDown || !yDown) {
+                return;
+            }
+            const xUp = event.touches[0].clientX;
+            const yUp = event.touches[0].clientY;
+            const xDiff = xDown - xUp;
+            const yDiff = yDown - yUp;
+            if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                if (xDiff > 0 && dx === 0) {
+                    dx = -10;
+                    dy = 0;
+                } else if (xDiff < 0 && dx === 0) {
+                    dx = 10;
+                    dy = 0;
+                }
+            } else {
+                if (yDiff > 0 && dy === 0) {
+                    dx = 0;
+                    dy = -10;
+                } else if (yDiff < 0 && dy === 0) {
+                    dx = 0;
+                    dy = 10;
+                }
+            }
+            xDown = null;
+            yDown = null;
+        }
+
+        const pauseButton = document.getElementById("pauseButton");
+        pauseButton.addEventListener("click", () => {
+            gamePaused = !gamePaused;
+            pauseButton.textContent = gamePaused ? "Resume" : "Pause";
+        });
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth - 20;
+            canvas.height = window.innerHeight - 100;
+            spawnFood();
+        }
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        gameLoop();
+    </script>
+</body>
+</html>
