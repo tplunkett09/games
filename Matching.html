@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Candy Crush Clone</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    .game-container {
+        display: inline-block;
+        border: 2px solid #ccc;
+    }
+    .candy {
+        width: 50px;
+        height: 50px;
+        display: inline-block;
+        margin: 2px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<h1>Candy Crush Clone</h1>
+<div class="game-container" id="game-container"></div>
+<script>
+    const numRows = 8;
+    const numCols = 8;
+    const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple'];
+    let gameGrid = [];
+
+    function createGameGrid() {
+        for (let i = 0; i < numRows; i++) {
+            let row = [];
+            for (let j = 0; j < numCols; j++) {
+                row.push({
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    row: i,
+                    col: j
+                });
+            }
+            gameGrid.push(row);
+        }
+    }
+
+    function renderGameGrid() {
+        const gameContainer = document.getElementById('game-container');
+        gameContainer.innerHTML = '';
+        for (let i = 0; i < numRows; i++) {
+            for (let j = 0; j < numCols; j++) {
+                const candy = document.createElement('div');
+                candy.className = 'candy';
+                candy.style.backgroundColor = gameGrid[i][j].color;
+                candy.dataset.row = i;
+                candy.dataset.col = j;
+                candy.addEventListener('click', () => handleCandyClick(i, j));
+                gameContainer.appendChild(candy);
+            }
+            gameContainer.appendChild(document.createElement('br'));
+        }
+    }
+
+    function handleCandyClick(row, col) {
+        let matches = findMatches(row, col);
+        if (matches.length >= 3) {
+            removeAndFall(matches);
+        }
+    }
+
+    function findMatches(row, col) {
+        let color = gameGrid[row][col].color;
+        let visited = Array(numRows).fill(null).map(() => Array(numCols).fill(false));
+        let matches = [];
+
+        function dfs(r, c) {
+            if (r < 0 || r >= numRows || c < 0 || c >= numCols || visited[r][c] || gameGrid[r][c].color !== color) {
+                return;
+            }
+            matches.push({ row: r, col: c });
+            visited[r][c] = true;
+            dfs(r - 1, c);
+            dfs(r + 1, c);
+            dfs(r, c - 1);
+            dfs(r, c + 1);
+        }
+
+        dfs(row, col);
+        return matches;
+    }
+
+    function removeAndFall(matches) {
+        for (let match of matches) {
+            gameGrid[match.row][match.col].color = null;
+        }
+        applyGravity();
+        renderGameGrid();
+    }
+
+    function applyGravity() {
+        for (let col = 0; col < numCols; col++) {
+            for (let row = numRows - 1; row >= 0; row--) {
+                if (!gameGrid[row][col].color) {
+                    for (let aboveRow = row - 1; aboveRow >= 0; aboveRow--) {
+                        if (gameGrid[aboveRow][col].color) {
+                            gameGrid[row][col].color = gameGrid[aboveRow][col].color;
+                            gameGrid[aboveRow][col].color = null;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Refill the top with new candies if needed
+        for (let col = 0; col < numCols; col++) {
+            for (let row = 0; row < numRows; row++) {
+                if (!gameGrid[row][col].color) {
+                    gameGrid[row][col].color = colors[Math.floor(Math.random() * colors.length)];
+                }
+            }
+        }
+    }
+
+    function init() {
+        createGameGrid();
+        renderGameGrid();
+    }
+
+    init();
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wall Breaker Game</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #f0f0f0;
+    }
+    #paddle {
+        width: 100px;
+        height: 20px;
+        background-color: #333;
+        position: absolute;
+        bottom: 30px; /* Slightly increase to give space for the ball to bounce before hitting the bottom */
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .obstacle {
+        width: 80px;
+        height: 20px;
+        position: absolute;
+    }
+    .obstacle.one-hit {
+        background-color: #0095DD;
+    }
+    .obstacle.two-hits {
+        background-color: #00FF00;
+    }
+    .obstacle.three-hits {
+        background-color: #FFD700;
+    }
+    .obstacle.four-hits {
+        background-color: #FFA500;
+    }
+    .obstacle.five-hits {
+        background-color: #FF0000;
+    }
+    #ball {
+        width: 20px;
+        height: 20px;
+        background-color: red;
+        border-radius: 50%;
+        position: absolute;
+    }
+</style>
+</head>
+<body>
+<div id="paddle"></div>
+<div class="obstacle one-hit" style="top: 100px; left: 50px;"></div>
+<div class="obstacle two-hits" style="top: 100px; left: 200px;"></div>
+<div class="obstacle three-hits" style="top: 100px; left: 350px;"></div>
+<div class="obstacle four-hits" style="top: 100px; left: 500px;"></div>
+<div class="obstacle five-hits" style="top: 100px; left: 650px;"></div>
+<div id="ball"></div>
+<script>
+    const paddle = document.getElementById('paddle');
+    const ball = document.getElementById('ball');
+    const obstacles = document.querySelectorAll('.obstacle');
+
+    let ballX = window.innerWidth / 2;
+    let ballY = window.innerHeight / 2;
+    let ballSpeedX = 2;
+    let ballSpeedY = -2; // Start with the ball moving upwards
+
+    function update() {
+        ballX += ballSpeedX;
+        ballY += ballSpeedY;
+
+        // Wall collision left or right
+        if (ballX <= 0 || ballX + 20 >= window.innerWidth) {
+            ballSpeedX = -ballSpeedX;
+        }
+
+        // Wall collision top
+        if (ballY <= 0) {
+            ballSpeedY = -ballSpeedY;
+        }
+
+        // Paddle collision
+        if (ballY + 20 >= window.innerHeight - 30 && ballX + 20 > paddle.offsetLeft && ballX < paddle.offsetLeft + 100) {
+            ballSpeedY = -ballSpeedY;
+        }
+
+        // Obstacle collision
+        obstacles.forEach(obstacle => {
+            if (
+                ballY <= obstacle.offsetTop + 20 &&
+                ballY + 20 >= obstacle.offsetTop &&
+                ballX <= obstacle.offsetLeft + 80 &&
+                ballX + 20 >= obstacle.offsetLeft
+            ) {
+                obstacleHits(obstacle);
+            }
+        });
+
+        // Game over condition
+        if (ballY >= window.innerHeight) {
+            alert('Game Over');
+            document.location.reload();
+        }
+
+        ball.style.left = ballX + 'px';
+        ball.style.top = ballY + 'px';
+
+        requestAnimationFrame(update);
+    }
+
+    function obstacleHits(obstacle) {
+        const hitsLeft = parseInt(obstacle.classList[1].split('-')[0]);
+        if (hitsLeft > 1) {
+            obstacle.className = `obstacle ${hitsLeft - 1}-hits`;
+            ballSpeedY = -ballSpeedY;
+        } else {
+            obstacle.parentNode.removeChild(obstacle);
+        }
+    }
+
+    update();
+
+    document.addEventListener('mousemove', function(e) {
+        let relativeX = e.clientX - document.body.clientWidth / 2;
+        paddle.style.left = Math.max(0, Math.min(window.innerWidth - 100, window.innerWidth / 2 + relativeX - 50)) + 'px';
+    });
+</script>
+</body>
+</html>
