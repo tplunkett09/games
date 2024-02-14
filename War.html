@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battlefield</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-image: url('PaperBackground.jpg'); /* Set the background image */
+			background-size: cover; /* Resize the background image to cover the entire screen */
+        }
+        .container {
+            display: flex;
+            height: calc(100% - 25px); /* Adjusted height to accommodate the banner */
+            position: relative;
+        }
+        .banner {
+            height: 25px;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        .restart-button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            text-align: center - 50px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+		.home-button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            text-align: center + 50px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+        .divider {
+            width: 2px;
+            background-color: red;
+            height: 100%;
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+        }
+        .side {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        img {
+            position: absolute;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .soldier {
+            max-width: 20px; /* Adjusted for visibility */
+        }
+        .tank {
+            max-width: 50px; /* Smaller tank images */
+        }
+        .marker {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+            background-color: red; /* Default color */
+        }
+        .marker.player2 {
+            background-color: orange; /* Player 2 color */
+        }
+        .destroyed {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div class="banner">
+    <div class="player" id="player1">Player 1: <span id="score1">0</span></div>
+    <div class="button-container">
+        <button class="restart-button" onclick="restartGame()">Restart</button>
+        <a href="Home.html" class="home-button">Home</a>
+    </div>
+    <div class="player" id="player2">Player 2: <span id="score2">0</span></div>
+</div>
+
+
+<div class="container">
+    <div class="side" id="leftSide">
+        <!-- Soldiers and Tanks for the left side -->
+    </div>
+    <div class="divider"></div>
+    <div class="side" id="rightSide">
+        <!-- Soldiers and Tanks for the right side -->
+    </div>
+</div>
+
+<script>
+    let player1Score = 0;
+    let player2Score = 0;
+
+    function updateScores() {
+        document.getElementById('score1').innerText = player1Score;
+        document.getElementById('score2').innerText = player2Score;
+
+        // Check if either player has reached a score of 10
+        if (player1Score >= 10) {
+            alert('Player 1 wins!');
+            endGame();
+        } else if (player2Score >= 10) {
+            alert('Player 2 wins!');
+            endGame();
+        }
+    }
+
+    function endGame() {
+        // Disable further gameplay or take any other end game actions
+        document.getElementById('leftSide').removeEventListener('click', handleLeftSideClick);
+        document.getElementById('rightSide').removeEventListener('click', handleRightSideClick);
+    }
+
+    function restartGame() {
+        const restart = confirm('Game Over. Would you like to restart?');
+        if (restart) {
+            // Reset scores
+            player1Score = 0;
+            player2Score = 0;
+            updateScores();
+
+            // Clear the battlefield
+            document.getElementById('leftSide').innerHTML = '';
+            document.getElementById('rightSide').innerHTML = '';
+
+            // Re-initialize the game
+            window.onload();
+        }
+    }
+
+    function getRandomPosition(elementWidth, elementHeight, existingPositions, sideWidth) {
+        const sideHeight = window.innerHeight - 25; // Adjusted for banner height
+        let position;
+
+        do {
+            position = {
+                x: Math.floor(Math.random() * (sideWidth - elementWidth)),
+                y: Math.floor(Math.random() * (sideHeight - elementHeight)) // Adjusted for banner height
+            };
+        } while (checkOverlap(position, elementWidth, elementHeight, existingPositions));
+
+        return position;
+    }
+
+    function checkOverlap(newPosition, newWidth, newHeight, existingPositions) {
+        return existingPositions.some(pos => {
+            return !(newPosition.x + newWidth < pos.x ||
+                     newPosition.x > pos.x + pos.width ||
+                     newPosition.y + newHeight < pos.y ||
+                     newPosition.y > pos.y + pos.height);
+        });
+    }
+
+    function placeImages(sideId, isLeftSide) {
+        const side = document.getElementById(sideId);
+        const existingPositions = [];
+
+        const soldierCount = 3; // Number of soldiers
+        const tankCount = 2;    // Number of tanks
+
+        const soldierWidth = 20; // Soldier image width
+        const soldierHeight = 20; // Soldier image height
+        const tankWidth = 50; // Tank image width
+        const tankHeight = 50; // Tank image height
+
+        const soldier1Width = 20; // Soldier1 image width
+        const soldier1Height = 20; // Soldier1 image height
+        const tank1Width = 50; // Tank1 image width
+        const tank1Height = 50; // Tank1 image height
+
+        for (let i = 0; i < soldierCount; i++) {
+            const soldier = document.createElement('img');
+            soldier.src = 'soldier.jpg';
+            soldier.classList.add('soldier');
+
+            const { x, y } = getRandomPosition(soldierWidth, soldierHeight, existingPositions, side.offsetWidth);
+            soldier.style.left = `${x}px`;
+            soldier.style.top = `${y}px`;
+
+            side.appendChild(soldier);
+            existingPositions.push({ x, y, width: soldierWidth, height: soldierHeight });
+        }
+
+        for (let i = 0; i < soldierCount; i++) {
+            const soldier1 = document.createElement('img');
+            soldier1.src = 'soldier1.jpg';
+            soldier1.classList.add('soldier');
+
+            const { x, y } = getRandomPosition(soldier1Width, soldier1Height, existingPositions, side.offsetWidth);
+            soldier1.style.left = `${x}px`;
+            soldier1.style.top = `${y}px`;
+
+            side.appendChild(soldier1);
+            existingPositions.push({ x, y, width: soldier1Width, height: soldier1Height });
+        }
+
+        for (let i = 0; i < tankCount; i++) {
+            const tank = document.createElement('img');
+            tank.src = 'tank.jpg';
+            tank.classList.add('tank');
+
+            const { x, y } = getRandomPosition(tankWidth, tankHeight, existingPositions, side.offsetWidth);
+            tank.style.left = `${x}px`;
+            tank.style.top = `${y}px`;
+
+            side.appendChild(tank);
+            existingPositions.push({ x, y, width: tankWidth, height: tankHeight });
+        }
+
+        for (let i = 0; i < tankCount; i++) {
+            const tank1 = document.createElement('img');
+            tank1.src = 'tank1.jpg';
+            tank1.classList.add('tank');
+
+            const { x, y } = getRandomPosition(tank1Width, tank1Height, existingPositions, side.offsetWidth);
+            tank1.style.left = `${x}px`;
+            tank1.style.top = `${y}px`;
+
+            side.appendChild(tank1);
+            existingPositions.push({ x, y, width: tank1Width, height: tank1Height });
+        }
+    }
+
+    function placeMarker(event, isLeftSide) {
+        const side = event.target.closest('.side'); // Ensure we're referencing the correct side
+        const marker = document.createElement('div');
+        const originalColorClass = isLeftSide ? 'player1' : 'player2';
+        marker.classList.add('marker', originalColorClass);
+
+        const rect = side.getBoundingClientRect();
+        const xPosition = event.clientX - rect.left;
+        const yPosition = event.clientY - rect.top;
+        marker.style.left = `${xPosition}px`;
+        marker.style.top = `${yPosition}px`;
+
+        side.appendChild(marker);
+
+        // New: Calculate mirrored marker position
+        const mirroredXPosition = side.offsetWidth - xPosition;
+
+        // Place and check hits for the mirrored marker on the opposite side
+        const oppositeSide = isLeftSide ? document.getElementById('rightSide') : document.getElementById('leftSide');
+        placeAndCheckMirroredMarker(oppositeSide, mirroredXPosition, yPosition, !isLeftSide, originalColorClass);
+    }
+
+
+    function placeAndCheckMirroredMarker(side, x, y, isLeftSideOriginal, originalColorClass) {
+        // Create a new marker element
+        const marker = document.createElement('div');
+        marker.classList.add('marker', originalColorClass);
+
+        marker.style.left = `${x}px`;
+        marker.style.top = `${y}px`;
+
+        // Append the mirrored marker to the opposite side
+        side.appendChild(marker);
+
+        // Adjusted to directly perform hit detection after placing the mirrored marker
+        checkHits(side, x, y, !isLeftSideOriginal, originalColorClass); // Ensure we're checking hits against the correct side's images
+    }
+
+    function checkHits(side, x, y, isLeftSide, colorClass) {
+        const targets = side.querySelectorAll('img');
+        targets.forEach(target => {
+            const targetRect = target.getBoundingClientRect();
+            const sideRect = side.getBoundingClientRect();
+
+            // Adjust target coordinates relative to side
+            const adjustedTargetX = targetRect.left - sideRect.left;
+            const adjustedTargetY = targetRect.top - sideRect.top;
+
+            if (x >= adjustedTargetX && x <= adjustedTargetX + targetRect.width &&
+                y >= adjustedTargetY && y <= adjustedTargetY + targetRect.height) {
+                // Hit detected only for mirrored dots
+                if (colorClass !== undefined) {
+                    // Only destroy the target if it's a mirrored dot
+                    target.style.opacity = '0.5';
+                    target.classList.add('destroyed');
+                    target.remove(); // Remove the destroyed target from the DOM
+
+                    // Update scores accordingly
+                    if (isLeftSide) {
+                        player1Score++;
+                    } else {
+                        player2Score++;
+                    }
+                    updateScores();
+                }
+            }
+        });
+    }
+
+    function handleLeftSideClick(event) {
+        placeMarker(event, true);
+    }
+
+    function handleRightSideClick(event) {
+        placeMarker(event, false);
+    }
+
+    window.onload = function() {
+        placeImages('leftSide', true);
+        placeImages('rightSide', false);
+        
+        // Attach event listeners to each side separately
+        document.getElementById('leftSide').addEventListener('click', handleLeftSideClick);
+        document.getElementById('rightSide').addEventListener('click', handleRightSideClick);
+    };
+</script>
+
+</body>
+</html>
