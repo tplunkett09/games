@@ -1,105 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Games</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        
-        .container {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin: 20px;
-            text-align: center;
-            width: 80%; /* Adjust width for smaller screens */
-            max-width: 300px; /* Set maximum width */
-        }
-        
-        h1 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        
-        p {
-            color: #666;
-            margin-bottom: 20px;
-        }
-        
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        
-        li {
-            margin-bottom: 10px;
-        }
-        
-        button {
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 10px 20px;
-            transition: background-color 0.3s ease;
-            width: 100%;
-            max-width: 200px; /* Set maximum width for buttons */
-        }
-        
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    .banner-container {
+      width: 100%;
+      height: 300px; /* Adjust height as needed */
+      overflow: hidden;
+      position: relative;
+    }
+    .banner-container img {
+      width: 100%;
+      height: auto;
+      display: none;
+    }
+    .buttons-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .game-button {
+      padding: 10px 20px;
+      margin: 5px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    .game-button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to our Games!</h1>
-        <p>Choose a game below to start playing:</p>
-        <ul>
-            <li><button id="startGameButton">Number Guessing Game</button></li>
-            <li><button id="startTTTButton">Tic Tac Toe</button></li>
-            <li><button id="startTriviaButton">Trivia</button></li>
-            <li><button id="startHangmanButton">Hangman</button></li>
-			<li><button id="startSnakeButton">Snake Game</button></li>
-			<li><button id="startBubbleButton">Bubble Pop</button></li>
-        </ul>
-    </div>
 
-    <script>
-        document.getElementById('startGameButton').addEventListener('click', function() {
-            window.location.href = 'NumberGame.html';
-        });
+<div class="banner-container">
+  <a href="NumberGame.html"><img src="NumberGame.jpg" alt="Number Game"></a>
+  <a href="TICTACTOE.html"><img src="TICTACTOE.jpg" alt="TICTACTOE"></a>
+  <a href="Hangman.html"><img src="Hangman.jpg" alt="Hangman"></a>
+  <a href="Trivia.html"><img src="Trivia.jpg" alt="Trivia"></a>
+  <a href="Snake.html"><img src="Snake.jpg" alt="Snake"></a>
+  <a href="bubble.html"><img src="bubble.jpg" alt="Bubble"></a>
+</div>
 
-        document.getElementById('startTTTButton').addEventListener('click', function() {
-            window.location.href = 'TICTACTOE.html';
-        });
+<div class="buttons-container">
+  <button class="game-button" onclick="location.href='NumberGame.html';">Number Game</button>
+  <button class="game-button" onclick="location.href='TICTACTOE.html';">TIC TAC TOE</button>
+  <button class="game-button" onclick="location.href='Hangman.html';">Hangman</button>
+  <button class="game-button" onclick="location.href='Trivia.html';">Trivia</button>
+  <button class="game-button" onclick="location.href='Snake.html';">Snake</button>
+  <button class="game-button" onclick="location.href='bubble.html';">Bubble</button>
+</div>
 
-        document.getElementById('startTriviaButton').addEventListener('click', function() {
-            window.location.href = 'Trivia.html';
-        });
+<script>
+  // Code for rotating banner
+  var images = document.querySelectorAll('.banner-container img');
+  var currentImageIndex = 0;
 
-        document.getElementById('startHangmanButton').addEventListener('click', function() {
-            window.location.href = 'Hangman.html';
-        });
-		document.getElementById('startSnakeButton').addEventListener('click', function() {
-            window.location.href = 'Snake.html';
-        });
-		document.getElementById('startBubbleButton').addEventListener('click', function() {
-            window.location.href = 'bubble.html';
-        });
-    </script>
+  function changeImage() {
+    images[currentImageIndex].style.display = 'none';
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    images[currentImageIndex].style.display = 'block';
+  }
+
+  setInterval(changeImage, 3000); // Change image every 3 seconds
+</script>
+
 </body>
 </html>
