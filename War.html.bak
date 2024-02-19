@@ -97,12 +97,12 @@
 <body>
 
 <div class="banner">
-    <div class="player" id="player1">Player 1: <span id="score1">0</span> (Turns: <span id="clicks1">0</span>)</div>
+    <div class="player" id="player1">Player 1: <span id="score1">0</span></div>
     <div class="button-container">
         <button class="restart-button" onclick="restartGame()">Restart</button>
         <a href="Home.html" class="home-button">Home</a>
     </div>
-    <div class="player" id="player2">Player 2: <span id="score2">0</span> (Turns: <span id="clicks2">0</span>)</div>
+    <div class="player" id="player2">Player 2: <span id="score2">0</span></div>
 </div>
 
 
@@ -119,15 +119,10 @@
 <script>
     let player1Score = 0;
     let player2Score = 0;
-	let player1Clicks = 0;
-    let player2Clicks = 0;
-    let currentPlayer = 1; // Player 1 starts
 
     function updateScores() {
         document.getElementById('score1').innerText = player1Score;
         document.getElementById('score2').innerText = player2Score;
-		document.getElementById('clicks1').innerText = player1Clicks;
-        document.getElementById('clicks2').innerText = player2Clicks;
 
         // Check if either player has reached a score of 10
         if (player1Score >= 10) {
@@ -151,8 +146,6 @@
             // Reset scores
             player1Score = 0;
             player2Score = 0;
-			player1Clicks = 0;
-            player2Clicks = 0;
             updateScores();
 
             // Clear the battlefield
@@ -295,61 +288,44 @@
         checkHits(side, x, y, !isLeftSideOriginal, originalColorClass); // Ensure we're checking hits against the correct side's images
     }
 
-function checkHits(side, x, y, isLeftSide, colorClass) {
-    const targets = side.querySelectorAll('img');
-    targets.forEach(target => {
-        const targetRect = target.getBoundingClientRect();
-        const sideRect = side.getBoundingClientRect();
+    function checkHits(side, x, y, isLeftSide, colorClass) {
+        const targets = side.querySelectorAll('img');
+        targets.forEach(target => {
+            const targetRect = target.getBoundingClientRect();
+            const sideRect = side.getBoundingClientRect();
 
-        // Adjust target coordinates relative to side
-        const adjustedTargetX = targetRect.left - sideRect.left;
-        const adjustedTargetY = targetRect.top - sideRect.top;
+            // Adjust target coordinates relative to side
+            const adjustedTargetX = targetRect.left - sideRect.left;
+            const adjustedTargetY = targetRect.top - sideRect.top;
 
-        if (x >= adjustedTargetX && x <= adjustedTargetX + targetRect.width &&
-            y >= adjustedTargetY && y <= adjustedTargetY + targetRect.height) {
-            // Hit detected only for mirrored dots
-            if (colorClass !== undefined) {
-                // Gradually decrease opacity until the target disappears
-                let opacity = 1;
-                const fadeOutInterval = setInterval(() => {
-                    opacity -= 0.1; // Adjust the decrement value as needed for desired fade-out speed
-                    target.style.opacity = opacity;
-                    if (opacity <= 0) {
-                        clearInterval(fadeOutInterval);
-                        target.remove(); // Remove the destroyed target from the DOM
+            if (x >= adjustedTargetX && x <= adjustedTargetX + targetRect.width &&
+                y >= adjustedTargetY && y <= adjustedTargetY + targetRect.height) {
+                // Hit detected only for mirrored dots
+                if (colorClass !== undefined) {
+                    // Only destroy the target if it's a mirrored dot
+                    target.style.opacity = '0.5';
+                    target.classList.add('destroyed');
+                    target.remove(); // Remove the destroyed target from the DOM
+
+                    // Update scores accordingly
+                    if (isLeftSide) {
+                        player1Score++;
+                    } else {
+                        player2Score++;
                     }
-                }, 100); // Adjust the interval duration as needed for desired fade-out smoothness
-
-                // Update scores accordingly
-                if (isLeftSide) {
-                    player1Score++;
-                } else {
-                    player2Score++;
+                    updateScores();
                 }
-                updateScores();
             }
-        }
-    });
-}
-
+        });
+    }
 
     function handleLeftSideClick(event) {
-		if (currentPlayer === 1) {
-			placeMarker(event, true);
-			player1Clicks++; // Increment click count for Player 1
-			document.getElementById('clicks1').innerText = player1Clicks; // Update click count immediately
-			currentPlayer = 2; // Switch to player 2's turn
-		}
-	}
+        placeMarker(event, true);
+    }
 
     function handleRightSideClick(event) {
-		if (currentPlayer === 2) {
-			placeMarker(event, false);
-			player2Clicks++; // Increment click count for Player 2
-			document.getElementById('clicks2').innerText = player2Clicks; // Update click count immediately
-			currentPlayer = 1; // Switch to player 1's turn
-		}
-	}
+        placeMarker(event, false);
+    }
 
     window.onload = function() {
         placeImages('leftSide', true);
