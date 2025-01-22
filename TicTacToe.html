@@ -5,11 +5,152 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tic-Tac-Toe with Disappearing Moves</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .home-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #007bff;
+      color: #fff;
+      padding: 8px 12px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .home-button:hover {
+      background-color: #0056b3; /* Darker shade of blue on hover */
+    }
+    .restart-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .restart-button:hover {
+      background-color: #218838; /* Darker shade of green on hover */
+    }
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 5px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      background-color: #fff;
+      border: 2px solid #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2em;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <h1>Tic-Tac-Toe with Disappearing Moves</h1>
-  <div id="game-board"></div>
-  <p id="message"></p>
-  <script src="script.js"></script>
+  <button class="home-button" onclick="goToHome()">Home</button>
+  <div id="game-board">
+    <!-- Cells will be generated dynamically -->
+  </div>
+  <p id="message">Player X's turn</p>
+  <button class="restart-button" onclick="restartGame()">Restart</button>
+
+  <script>
+    function goToHome() {
+      window.location.href = 'Home.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      let currentPlayer = 'X';
+      const gameBoard = document.getElementById('game-board');
+      const message = document.getElementById('message');
+      let board = Array(3).fill(null).map(() => Array(3).fill(null));
+
+      function initializeBoard() {
+        gameBoard.innerHTML = ''; // Clear the board
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.dataset.row = i;
+            cell.dataset.col = j;
+            cell.addEventListener('click', handleCellClick);
+            gameBoard.appendChild(cell);
+          }
+        }
+      }
+
+      function handleCellClick(event) {
+        const cell = event.target;
+        const row = cell.dataset.row;
+        const col = cell.dataset.col;
+
+        // Check if the cell is already occupied
+        if (board[row][col] || !cell.textContent === '') return;
+
+        board[row][col] = currentPlayer;
+        cell.textContent = currentPlayer;
+
+        // Check for a win or draw
+        if (checkWinner()) {
+          message.textContent = `Player ${currentPlayer} wins!`;
+          disableBoard();
+          return;
+        }
+
+        if (board.flat().every(cell => cell)) {
+          message.textContent = "It's a draw!";
+          disableBoard();
+          return;
+        }
+
+        // Switch player
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        message.textContent = `Player ${currentPlayer}'s turn`;
+      }
+
+      function checkWinner() {
+        const winningCombinations = [
+          // Rows
+          [[0, 0], [0, 1], [0, 2]],
+          [[1, 0], [1, 1], [1, 2]],
+          [[2, 0], [2, 1], [2, 2]],
+          // Columns
+          [[0, 0], [1, 0], [2, 0]],
+          [[0, 1], [1, 1], [2, 1]],
+          [[0, 2], [1, 2], [2, 2]],
+          // Diagonals
+          [[0, 0], [1, 1], [2, 2]],
+          [[0, 2], [1, 1], [2, 0]],
+        ];
+
+        return winningCombinations.some(combination =>
+          combination.every(([row, col]) => board[row][col] === currentPlayer)
+        );
+      }
+
+      function disableBoard() {
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => cell.removeEventListener('click', handleCellClick));
+      }
+
+      window.restartGame = function() {
+        currentPlayer = 'X';
+        board = Array(3).fill(null).map(() => Array(3).fill(null));
+        message.textContent = `Player X's turn`;
+        initializeBoard();
+      };
+
+      // Initialize the game board on page load
+      initializeBoard();
+    });
+  </script>
 </body>
 </html>
