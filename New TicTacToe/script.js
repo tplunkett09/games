@@ -1,58 +1,71 @@
-// Game state variables
-const board = Array(3).fill(null).map(() => Array(3).fill(null));
-const moveQueue = [];
-const maxMoves = 6; // Maximum moves allowed on the board at once
-let currentPlayer = "X";
-let isGameActive = true;
+// Persistent win counters
+let xWins = 0;
+let oWins = 0;
 
-// Create the game board
+// Game state variables
+let board, moveQueue, maxMoves, currentPlayer, isGameActive;
 const gameBoard = document.getElementById("game-board");
 const message = document.getElementById("message");
+const restartBtn = document.getElementById("restart-btn");
+const xWinsSpan = document.getElementById("x-wins");
+const oWinsSpan = document.getElementById("o-wins");
 
-for (let i = 0; i < 3; i++) {
-  for (let j = 0; j < 3; j++) {
-    const cell = document.createElement("div");
-    cell.classList.add("cell");
-    cell.dataset.row = i;
-    cell.dataset.col = j;
-    gameBoard.appendChild(cell);
+// Initialize the game
+function initializeGame() {
+  board = Array(3).fill(null).map(() => Array(3).fill(null));
+  moveQueue = [];
+  maxMoves = 6; // Maximum moves allowed on the board at once
+  currentPlayer = "X";
+  isGameActive = true;
+  renderBoard();
+  message.textContent = `Player ${currentPlayer}'s turn`;
+}
 
-    cell.addEventListener("click", () => handleCellClick(cell, i, j));
+function renderBoard() {
+  gameBoard.innerHTML = "";
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.dataset.row = i;
+      cell.dataset.col = j;
+      if (board[i][j]) {
+        cell.innerHTML = `<span>${board[i][j]}</span>`;
+      }
+      cell.addEventListener("click", () => handleCellClick(cell, i, j));
+      gameBoard.appendChild(cell);
+    }
   }
 }
 
 // Handle cell clicks
 function handleCellClick(cell, row, col) {
   if (!isGameActive || board[row][col]) return;
-
-  // Place the current player's mark
   board[row][col] = currentPlayer;
   cell.innerHTML = `<span>${currentPlayer}</span>`;
-
-  // Add move to the queue
   moveQueue.push({ row, col, cell });
   if (moveQueue.length > maxMoves) {
-    // Remove the oldest move
     const oldestMove = moveQueue.shift();
     board[oldestMove.row][oldestMove.col] = null;
     animateDisappearingMove(oldestMove.cell);
   }
-
-  // Check for a winner
   if (checkWinner()) {
     message.textContent = `Player ${currentPlayer} wins!`;
     isGameActive = false;
+    if (currentPlayer === "X") {
+      xWins++;
+      xWinsSpan.textContent = "X Wins: " + xWins;
+    } else {
+      oWins++;
+      oWinsSpan.textContent = "O Wins: " + oWins;
+    }
     return;
   }
-
-  // Check for a draw
   if (moveQueue.length === 9) {
     message.textContent = "It's a draw!";
     isGameActive = false;
     return;
   }
-
-  // Switch to the other player
   currentPlayer = currentPlayer === "X" ? "O" : "X";
   message.textContent = `Player ${currentPlayer}'s turn`;
 }
@@ -81,16 +94,19 @@ function checkWinner() {
     [{ r: 0, c: 0 }, { r: 1, c: 1 }, { r: 2, c: 2 }],
     [{ r: 0, c: 2 }, { r: 1, c: 1 }, { r: 2, c: 0 }],
   ];
-
-  for (const combo of winningCombinations) {
-    const [a, b, c] = combo;
-    if (
-      board[a.r][a.c] &&
-      board[a.r][a.c] === board[b.r][b.c] &&
-      board[a.r][a.c] === board[c.r][c.c]
-    ) {
-      return true;
-    }
-  }
-  return false;
+  return winningCombinations.some(comb => {
+    const [a, b, c] = comb;
+    const v1 = board[a.r][a.c];
+    const v2 = board[b.r][b.c];
+    const v3 = board[c.r][c.c];
+    return v1 && v1 === v2 && v2 === v3;
+  });
 }
+
+// Restart button event
+restartBtn.addEventListener("click", () => {
+  initializeGame();
+});
+
+// Start the game on load
+initializeGame();
